@@ -9,7 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
-import ec.edu.puce.githubclient.ui.screens.RepoList
+import ec.edu.puce.githubclient.ui.components.RepoListScreen  // ← cambiado
 import ec.edu.puce.githubclient.ui.theme.GithubClientTheme
 
 class MainActivity : ComponentActivity() {
@@ -20,7 +20,7 @@ class MainActivity : ComponentActivity() {
             GithubClientTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Box(modifier = Modifier.padding(innerPadding)) {
-                        RepoList()
+                        RepoListScreen()                       // ← cambiado
                     }
                 }
             }
