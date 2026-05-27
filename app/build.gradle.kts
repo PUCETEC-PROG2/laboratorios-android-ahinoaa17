@@ -14,7 +14,7 @@ android {
 
     namespace = "ec.edu.puce.githubclient"
 
-    compileSdk = 36 // Cambiado a 35 por estabilidad actual
+    compileSdk = 36
 
     defaultConfig {
 
@@ -30,8 +30,6 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        // --- Carga segura de Token ---
-
         val properties = Properties()
 
         val propertiesFile = project.rootProject.file("local.properties")
@@ -44,7 +42,6 @@ android {
 
         val githubToken = properties.getProperty("GITHUB_TOKEN") ?: ""
 
-        // Importante: las comillas escapadas son necesarias para que sea un String en Java/Kotlin
 
         buildConfigField("String", "GITHUB_TOKEN", "\"$githubToken\"")
 
@@ -67,8 +64,6 @@ android {
         }
 
     }
-
-    // Actualizado a Java 17 para evitar conflictos con librerías de red
 
     compileOptions {
 
@@ -130,13 +125,9 @@ dependencies {
 
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.10.0")
 
-    // --- RETROFIT VERSION ESTABLE 2.9.0 ---
-
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
 
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
-
-    // --- OKHTTP LOGGING INTERCEPTOR ESTABLE 4.12.0 ---
 
     implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
 
