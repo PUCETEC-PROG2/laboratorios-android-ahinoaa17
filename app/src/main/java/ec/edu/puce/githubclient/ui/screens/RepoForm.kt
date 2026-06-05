@@ -33,28 +33,30 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import ec.edu.puce.githubclient.models.Repository
 import ec.edu.puce.githubclient.viewmodels.RepoListViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RepoForm(
+    repository: Repository? = null,
     onBackClick: () -> Unit,
     viewModel: RepoListViewModel
 ) {
-    var name by remember { mutableStateOf("") }
-    var description by remember { mutableStateOf("") }
+    var name by remember { mutableStateOf(repository?.name ?: "") }
+    var description by remember { mutableStateOf(repository?.description ?: "") }
     val isLoading by viewModel.isLoading.collectAsState()
     val errorMsg by viewModel.errorMsg.collectAsState()
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = "Nuevo Repositorio") },
+                title = { Text(text = if (repository == null) "Nuevo Repositorio" else "Editar Repositorio") },
                 navigationIcon = {
-                    IconButton(onClick = { onBackClick() }) {
+                    IconButton(onClick = onBackClick) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "Regresar",
+                            contentDescription = null,
                             tint = MaterialTheme.colorScheme.onPrimaryContainer
                         )
                     }
@@ -106,8 +108,15 @@ fun RepoForm(
 
                 Button(
                     onClick = {
-                        viewModel.createRepo(name, description) {
-                            onBackClick()
+                        if (repository == null) {
+                            viewModel.createRepo(name, description) { onBackClick() }
+                        } else {
+                            viewModel.updateRepo(
+                                owner = repository.owner.login,
+                                oldName = repository.name,
+                                newName = name,
+                                newDescription = description
+                            ) { onBackClick() }
                         }
                     },
                     enabled = name.isNotBlank() && !isLoading,
@@ -123,7 +132,7 @@ fun RepoForm(
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(
                                 imageVector = Icons.Default.Send,
-                                contentDescription = "Guardar"
+                                contentDescription = null
                             )
                             Spacer(modifier = Modifier.width(width = 8.dp))
                             Text(text = "Guardar")

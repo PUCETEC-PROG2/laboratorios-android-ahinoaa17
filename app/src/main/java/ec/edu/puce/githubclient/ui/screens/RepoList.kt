@@ -21,16 +21,15 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import ec.edu.puce.githubclient.models.Repository
 import ec.edu.puce.githubclient.ui.components.RepoItem
 import ec.edu.puce.githubclient.viewmodels.RepoListViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RepoList(
-    onNavigateToForm: () -> Unit,
+    onNavigateToForm: (Repository?) -> Unit,
     viewModel: RepoListViewModel
 ) {
     val repos by viewModel.repos.collectAsState()
@@ -49,14 +48,14 @@ fun RepoList(
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = onNavigateToForm,
+                onClick = { onNavigateToForm(null) },
                 shape = CircleShape,
                 containerColor = MaterialTheme.colorScheme.primaryContainer,
                 contentColor = MaterialTheme.colorScheme.onPrimaryContainer
             ) {
                 Icon(
                     imageVector = Icons.Default.Add,
-                    contentDescription = "Añadir"
+                    contentDescription = null
                 )
             }
         }
@@ -78,23 +77,24 @@ fun RepoList(
                     color = MaterialTheme.colorScheme.error,
                     modifier = Modifier
                         .align(Alignment.Center)
-                        .padding(16.dp)
+                        .padding(all = 16.dp)
                 )
             }
 
             if (!isLoading && errorMsg == null) {
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
                     items(repos.size) { i ->
-                        RepoItem(repository = repos[i])
+                        val repo = repos[i]
+                        RepoItem(
+                            repository = repo,
+                            onEditClick = { onNavigateToForm(repo) },
+                            onDeleteConfirm = {
+                                viewModel.deleteRepo(repo.owner.login, repo.name)
+                            }
+                        )
                     }
                 }
             }
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun RepoListPreview() {
-    RepoList(onNavigateToForm = {}, viewModel = viewModel())
 }
